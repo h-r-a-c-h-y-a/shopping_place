@@ -154,7 +154,7 @@ export class SignWithSocialPagesComponent implements OnInit {
         const userInfo = result.user.providerData[0];
         // tslint:disable-next-line:max-line-length
         this.client = this.signWithSocialPagesService.client = new Client(userInfo.displayName, userInfo.email, null, [userInfo.phoneNumber]);
-        this.signWithSocialPagesService.client.id = result.user.uid;
+        this.signWithSocialPagesService.client.uid = result.user.uid;
         if (!this.isValidData(this.client)) {
           this.route.navigate(['/fill-data']);
           return;

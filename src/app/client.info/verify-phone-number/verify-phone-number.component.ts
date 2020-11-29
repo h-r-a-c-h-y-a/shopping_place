@@ -72,7 +72,7 @@ confirmCode(code: string) {
     const credentials = firebase.auth.PhoneAuthProvider.credential(verificationId, String(code));
     firebase.auth().currentUser.linkWithCredential(credentials).then((auth) => {
       console.log('Anonymous account successfully upgraded', auth);
-      this.client.id = auth.user.uid;
+      this.client.uid = auth.user.uid;
       this.regService.save(this.client).subscribe(response => {
         this.router.navigate(['/shop']).then();
         return;
@@ -93,11 +93,11 @@ confirmCode(code: string) {
   }
   this.confirmationResult.confirm(code)
     .then(result => {
-      this.client.id = result.user.uid;
+      this.client.uid = result.user.uid;
       this.regService.save(this.client)
         .subscribe(resp => {
           this.isVerify = true;
-          this.router.navigate(['/shop']);
+          this.router.navigate(['/shop']).then();
         }, err => {
           this.errorMessage = err.message;
           this.regService.unregister();

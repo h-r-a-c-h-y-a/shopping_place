@@ -23,7 +23,7 @@
       <div formArrayName="phones">
         <div class="form-group" *ngFor="let phone of this.registerService.clientForm.controls['phones'].controls; let i = index">
           <label>Phone</label>
-          <input class="form-control" formControlName="{{i}}"/>
+          <input class="form-control" type="tel" formControlName="{{i}}"/>
         </div>
         <div class="invalid-field"
              *ngIf=" this.registerService.clientForm.controls['phones'].controls[0].invalid && this.registerService.clientForm.controls['phones'].controls[0].touched ">

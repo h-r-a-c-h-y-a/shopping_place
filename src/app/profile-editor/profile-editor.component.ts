@@ -45,7 +45,7 @@ export class ProfileEditorComponent implements OnInit , ComponentCanDeactivate {
     const email =  this.myForm.controls.email.value;
     const phones =  this.client.phones;
     const client: Client = new Client(name, email, '', phones);
-    client.setId(this.client.id);
+    client.setId(this.client.uid);
     this.client = client;
     this.saved = !this.saved;
     this.editorService.edit(client).subscribe((data: Client ) => {

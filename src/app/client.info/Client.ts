@@ -1,5 +1,5 @@
 export class Client {
-  public id?: string;
+  public uid?: string;
   public name: string;
   public email: string;
   public password: string;
@@ -14,6 +14,6 @@ export class Client {
   }
 
   setId(value: string) {
-    this.id = value;
+    this.uid = value;
   }
 }

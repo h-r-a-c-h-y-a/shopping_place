@@ -3,3 +3,4 @@ e2e
 ssl
 *.iml
 .idea
+src/app/firebase/firebase.config.ts

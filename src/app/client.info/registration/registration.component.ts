@@ -39,8 +39,8 @@ export class RegistrationComponent implements OnInit, ComponentCanDeactivate {
     this.saved = !this.saved;
     const data = this.registerService.register();
     data.then((res: Client) => this.client = res,
-      (err: string) => {
-      this.errorMessage = err;
+      error => {
+      console.log(error);
       this.isFailed = true;
     });
   }

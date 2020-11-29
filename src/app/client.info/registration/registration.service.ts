@@ -57,7 +57,7 @@ export class RegistrationService {
             firebase.auth().currentUser.linkWithCredential(credential).then((auth) => {
               console.log('Anonymous account successfully upgraded', auth);
               this.client = newClient;
-              this.client.id = auth.user.uid;
+              this.client.uid = auth.user.uid;
               if (auth.user && auth.user.emailVerified === false) {
                 auth.user.sendEmailVerification().then(() => {
                   this.save(this.client).subscribe(response => {
@@ -75,6 +75,34 @@ export class RegistrationService {
               console.log('Error upgrading anonymous account', error);
               reject(error);
             });
+          } else {
+            firebase.auth().createUserWithEmailAndPassword(newClient.email, newClient.password)
+              .then(auth => {
+                this.client = newClient;
+                this.client.uid = auth.user.uid;
+                if (auth.user && auth.user.emailVerified === false) {
+                  auth.user.sendEmailVerification().then(() => {
+                    this.save(this.client).subscribe(response => {
+                      alert(this.successMessage);
+                      this.route.navigate(['/login']).then();
+                      resolve(newClient);
+                    }, error => {
+                      this.unregister();
+                      reject(error);
+                    });
+                  });
+                }
+              }).catch((error) => {
+              // Handle Errors here.
+              const errorCode = error.code;
+              const errorMessage = error.message;
+              console.log(errorCode, errorMessage);
+              reject(error)
+            });
+            // firebase.auth().sendSignInLinkToEmail(newClient.email, {
+            //   url: 'http://localhost:4200/login',
+            //   handleCodeInApp: true
+            // }).then();
           }
         } else {
           this.client = newClient;
@@ -83,39 +111,12 @@ export class RegistrationService {
         }
       });
     });
-    // return firebase.auth().createUserWithEmailAndPassword(newClient.email, newClient.password)
-    //   .then(auth => {
-    //     this.client = newClient;
-    //     this.client.id = auth.user.uid;
-    //     if (auth.user && auth.user.emailVerified === false) {
-    //       auth.user.sendEmailVerification().then(() => {
-    //         this.save(this.client).subscribe(response => {
-    //           alert(this.successMessage);
-    //           this.route.navigate(['/login']);
-    //           return;
-    //         }, error => {
-    //           this.unregister();
-    //         });
-    //       });
-    //     }
-    //   }).catch((error) => {
-    //     // Handle Errors here.
-    //     const errorCode = error.code;
-    //     const errorMessage = error.message;
-    //     console.log(errorCode, errorMessage);
-    //   });
-    // firebase.auth().sendSignInLinkToEmail(client.email, {
-    //   url: 'http://localhost:4200/login',
-    //   handleCodeInApp: true
-    // }).then(() => {
-    //
-    // });
+
   }
 
   unregister() {
     const user = firebase.auth().currentUser;
-    if(user) user.delete().then().catch((error) => console.log(error));
-    // this.route.navigate(['/login']).then();
+    if (user) user.delete().then().catch((error) => console.log(error));
   }
 
   save(client: Client) {

@@ -45,7 +45,7 @@ export class DataFillComponent implements OnInit {
     const email = this.clientForm.controls.email.value;
     const phones = (this.clientForm.controls.phones as FormArray).getRawValue();
     const newClient = new Client(name, email, null, phones);
-    newClient.id = this.client.id;
+    newClient.uid = this.client.uid;
     this.registerService.save(newClient).subscribe((resp) => {
       this.route.navigate(['/shop']).then();
     });
