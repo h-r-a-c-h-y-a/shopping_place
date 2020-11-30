@@ -17,7 +17,7 @@ import {Observable} from 'rxjs';
 export class VerifyPhoneNumberComponent implements OnInit, ComponentCanDeactivate {
 
   isVerify = false;
-  client: Client;
+  phoneNumber: string;
   recaptchaVerifier;
   recaptchaWidgetId;
   confirmationResult;
@@ -38,14 +38,14 @@ export class VerifyPhoneNumberComponent implements OnInit, ComponentCanDeactivat
 
   sendCode(): void {
     this.isVerify = false;
-    this.client = this.regService.client;
-    if (!this.client) return;
+    this.phoneNumber = this.regService.client.phones[0];
+    if (!this.phoneNumber) return;
     this.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container');
     this.recaptchaVerifier.render().then(widgetId => {
       this.recaptchaWidgetId = widgetId;
     });
     // firebase.auth.PhoneAuthProvider.
-    firebase.auth().signInWithPhoneNumber(this.client.phones[0], this.recaptchaVerifier)
+    firebase.auth().signInWithPhoneNumber(this.phoneNumber, this.recaptchaVerifier)
       .then((confirmationResult) => {
         this.confirmationResult = confirmationResult;
       })
@@ -66,62 +66,56 @@ export class VerifyPhoneNumberComponent implements OnInit, ComponentCanDeactivat
       this.confirmCode(String(code));
     }
   }
-confirmCode(code: string) {
-  if (firebase.auth().currentUser) {
-    const verificationId = this.confirmationResult.verificationId;
-    const credentials = firebase.auth.PhoneAuthProvider.credential(verificationId, String(code));
-    firebase.auth().currentUser.linkWithCredential(credentials).then((auth) => {
-      console.log('Anonymous account successfully upgraded', auth);
-      this.client.uid = auth.user.uid;
-      this.regService.save(this.client).subscribe(response => {
+
+  confirmCode(code: string) {
+    // if (firebase.auth().currentUser) {
+    //   const verificationId = this.confirmationResult.verificationId;
+    //   const credentials = firebase.auth.PhoneAuthProvider.credential(verificationId, String(code));
+    //   firebase.auth().currentUser.linkWithCredential(credentials).then((auth) => {
+    //     console.log('Anonymous account successfully upgraded', auth);
+    //     this.client.uid = auth.user.uid;
+    //     this.regService.save(this.client).subscribe(response => {
+    //       this.router.navigate(['/login']).then();
+    //       return;
+    //     }, error => {
+    //       this.regService.unregister();
+    //       grecaptcha.reset(this.recaptchaWidgetId);
+    //       this.recaptchaVerifier.render().then(function (widgetId) {
+    //         grecaptcha.reset(widgetId);
+    //       });
+    //     });
+    //   }, (error) => {
+    //     this.regService.unregister();
+    //     grecaptcha.reset(this.recaptchaWidgetId);
+    //     this.recaptchaVerifier.render().then(function (widgetId) {
+    //       grecaptcha.reset(widgetId);
+    //     });
+    //     console.error('Error upgrading anonymous account', error);
+    //   });
+    //   return;
+    // }
+    this.confirmationResult.confirm(code)
+      .then(() => {
+        this.isVerify = true;
         this.router.navigate(['/shop']).then();
-        return;
-      }, error => {
+      }, err => {
+        this.errorMessage = err.message;
         this.regService.unregister();
-        this.recaptchaVerifier.render().then((widgetId) => {
+        grecaptcha.reset(this.recaptchaWidgetId);
+        this.recaptchaVerifier.render().then(function (widgetId) {
           grecaptcha.reset(widgetId);
         });
       });
-    }, (error) => {
-      this.regService.unregister();
-      this.recaptchaVerifier.render().then((widgetId) => {
-        grecaptcha.reset(widgetId);
-      });
-      console.error('Error upgrading anonymous account', error);
-    });
-    return;
   }
-  this.confirmationResult.confirm(code)
-    .then(result => {
-      this.client.uid = result.user.uid;
-      this.regService.save(this.client)
-        .subscribe(resp => {
-          this.isVerify = true;
-          this.router.navigate(['/shop']).then();
-        }, err => {
-          this.errorMessage = err.message;
-          this.regService.unregister();
-          this.recaptchaVerifier.render().then((widgetId) => {
-            grecaptcha.reset(widgetId);
-          });
-        });
-    }).catch(err => {
-    this.errorMessage = err.message;
-    this.regService.unregister();
-    this.recaptchaVerifier.render().then((widgetId) => {
-      grecaptcha.reset(widgetId);
-    });
-  });
-}
 
   canDeactivate(): boolean | Observable<boolean> {
-      if (!this.isVerify && !firebase.auth().currentUser)  {
-        const res = confirm('Data not saved are you sure you want to exit?');
-        if (res) {
-          this.regService.unregister();
-          return true;
-        } else return false;
-      } else return true;
+    if (!this.isVerify && !firebase.auth().currentUser) {
+      const res = confirm('Data not saved are you sure you want to exit?');
+      if (res) {
+        this.regService.unregister();
+        return true;
+      } else return false;
+    } else return true;
   }
 
 }

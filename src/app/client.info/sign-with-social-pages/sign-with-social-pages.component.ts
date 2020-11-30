@@ -149,19 +149,19 @@ export class SignWithSocialPagesComponent implements OnInit {
     this.registerService.getByUID(uid)
       .subscribe((resp: Client) => {
         this.client = this.signWithSocialPagesService.client = resp;
-        this.route.navigate(['/shop']);
+        this.route.navigate(['/shop']).then();
       }, error => {
         const userInfo = result.user.providerData[0];
         // tslint:disable-next-line:max-line-length
         this.client = this.signWithSocialPagesService.client = new Client(userInfo.displayName, userInfo.email, null, [userInfo.phoneNumber]);
         this.signWithSocialPagesService.client.uid = result.user.uid;
         if (!this.isValidData(this.client)) {
-          this.route.navigate(['/fill-data']);
+          this.route.navigate(['/fill-data']).then();
           return;
         } else {
           this.registerService.save(this.client)
             .subscribe((resp) => {
-              this.route.navigate(['/shop']);
+              this.route.navigate(['/shop']).then();
             });
         }
       });
@@ -169,12 +169,12 @@ export class SignWithSocialPagesComponent implements OnInit {
 
   signAnonymous() {
     if (firebase.auth().currentUser) {
-      this.route.navigate(['/shop']);
+      this.route.navigate(['/shop']).then();
       return;
     }
     firebase.auth().signInAnonymously().then(res => {
       console.log(res);
-      this.route.navigate(['/shop']);
+      this.route.navigate(['/shop']).then();
     }).catch(err => {
       console.log(err);
     });

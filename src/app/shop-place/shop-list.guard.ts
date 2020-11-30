@@ -3,6 +3,7 @@ import {Observable} from 'rxjs';
 import {CookieService} from 'ngx-cookie-service';
 import {Injectable} from '@angular/core';
 import {FirebaseConfig} from '../firebase/firebase.config';
+import * as firebase from "firebase";
 
 @Injectable()
 export class ShopListGuard implements CanActivate {
@@ -16,12 +17,13 @@ export class ShopListGuard implements CanActivate {
     : Observable<boolean | UrlTree> | Promise<boolean> | boolean {
 
     return new Promise<boolean>((resolve, reject) => {
-      this.firebaseConfig.getCurrentUser().then(() => {
-        return resolve(true);
-      }, error => {
-        alert('Login only to authorized users\n Please register or login in system.');
+      firebase.auth().onAuthStateChanged(user => {
+        if (user) {
+          if (user.emailVerified) return resolve(true);
+          else alert('An email confirmation link has been sent to your email. please click on it and sign in again');
+        } else alert('Login only to authorized users\n Please register or login in system.');
         this.route.navigate(['/login']).then();
-        return resolve(false);
+        reject(false);
       });
     });
   }

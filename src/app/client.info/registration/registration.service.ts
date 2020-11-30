@@ -48,70 +48,69 @@ export class RegistrationService {
     const password = this.clientForm.controls.password.value;
     const phones = (this.clientForm.controls.phones as FormArray).getRawValue();
     const newClient = new Client(name, email, password, phones);
-    const dialogRef = this.dialog.open(DialogContentExampleComponent);
+    // const dialogRef = this.dialog.open(DialogContentExampleComponent);
     return new Promise<Client | string>((resolve, reject) => {
-      dialogRef.afterClosed().subscribe(answer => {
-        if (answer) {
-          if (firebase.auth().currentUser) {
-            const credential = firebase.auth.EmailAuthProvider.credential(newClient.email, newClient.password);
-            firebase.auth().currentUser.linkWithCredential(credential).then((auth) => {
-              console.log('Anonymous account successfully upgraded', auth);
-              this.client = newClient;
-              this.client.uid = auth.user.uid;
-              if (auth.user && auth.user.emailVerified === false) {
-                auth.user.sendEmailVerification().then(() => {
-                  this.save(this.client).subscribe(response => {
-                    alert(this.successMessage);
-                    this.route.navigate(['/login']).then(() => {
-                      resolve(response as Client);
-                    });
-                  }, error => {
-                    this.unregister();
-                    reject(error);
-                  });
-                });
-              }
-            }, (error) => {
-              console.log('Error upgrading anonymous account', error);
-              reject(error);
-            });
-          } else {
-            firebase.auth().createUserWithEmailAndPassword(newClient.email, newClient.password)
-              .then(auth => {
-                this.client = newClient;
-                this.client.uid = auth.user.uid;
-                if (auth.user && auth.user.emailVerified === false) {
-                  auth.user.sendEmailVerification().then(() => {
-                    this.save(this.client).subscribe(response => {
-                      alert(this.successMessage);
-                      this.route.navigate(['/login']).then();
-                      resolve(newClient);
-                    }, error => {
-                      this.unregister();
-                      reject(error);
-                    });
-                  });
-                }
-              }).catch((error) => {
-              // Handle Errors here.
-              const errorCode = error.code;
-              const errorMessage = error.message;
-              console.log(errorCode, errorMessage);
-              reject(error)
-            });
-            // firebase.auth().sendSignInLinkToEmail(newClient.email, {
-            //   url: 'http://localhost:4200/login',
-            //   handleCodeInApp: true
-            // }).then();
-          }
-        } else {
+      // dialogRef.afterClosed().subscribe(answer => {
+      //   if (answer) {
+      //     if (firebase.auth().currentUser) {
+      //       const credential = firebase.auth.EmailAuthProvider.credential(newClient.email, newClient.password);
+      //       firebase.auth().currentUser.linkWithCredential(credential).then((auth) => {
+      //         console.log('Anonymous account successfully upgraded', auth);
+      //         this.client = newClient;
+      //         this.client.uid = auth.user.uid;
+      //         if (auth.user && auth.user.emailVerified === false) {
+      //           auth.user.sendEmailVerification().then(() => {
+      //             this.save(this.client).subscribe(response => {
+      //               alert(this.successMessage);
+      //               this.route.navigate(['/login']).then(() => {
+      //                 resolve(response as Client);
+      //               });
+      //             }, error => {
+      //               this.unregister();
+      //               reject(error);
+      //             });
+      //           });
+      //         }
+      //       }, (error) => {
+      //         console.log('Error upgrading anonymous account', error);
+      //         reject(error);
+      //       });
+      //     } else {
+      firebase.auth().createUserWithEmailAndPassword(newClient.email, newClient.password)
+        .then(auth => {
           this.client = newClient;
-          this.route.navigate(['/verify-phone-number']).then();
-          resolve(newClient);
-        }
+          this.client.uid = auth.user.uid;
+          if (auth.user && auth.user.emailVerified === false) {
+            auth.user.sendEmailVerification().then(() => {
+              this.save(this.client).subscribe(response => {
+                alert(this.successMessage);
+                this.route.navigate(['/login']).then();
+                resolve(newClient);
+              }, error => {
+                this.unregister();
+                reject(error);
+              });
+            });
+          }
+        }).catch((error) => {
+        // Handle Errors here.
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        console.log(errorCode, errorMessage);
+        reject(error)
       });
+      // firebase.auth().sendSignInLinkToEmail(newClient.email, {
+      //   url: 'http://localhost:4200/login',
+      //   handleCodeInApp: true
+      // }).then();
+      // }
+      // } else {
+      //   this.client = newClient;
+      //   this.route.navigate(['/verify-phone-number']).then();
+      //   resolve(newClient);
+      // }
+      // });
     });
-
   }
 
   unregister() {
