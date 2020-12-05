@@ -7,14 +7,14 @@ import {Router} from '@angular/router';
 export class FirebaseConfig {
 
   firebaseConfig = {
-    apiKey: '',
-    authDomain : '',
-    databaseURL : '',
-    projectId : '',
-    storageBucket : '',
+    apiKey: 'AIzaSyAnM5IHD37ecTEtLozVVLsCy3_C1HxGUUE',
+    authDomain : 'my-first-firebase-projec-ea241.firebaseapp.com',
+    databaseURL : 'https://my-first-firebase-projec-ea241.firebaseio.com',
+    projectId : 'my-first-firebase-projec-ea241',
+    storageBucket : 'my-first-firebase-projec-ea241.appspot.com',
     messagingSenderId : 527663602195,
-    appId : '',
-    measurementId : ''
+    appId : '1:527663602195:web:ea65556c5a472bba6afde6',
+    measurementId : 'G-X40MP8GPHY'
     };
   ui;
   uiConfig;

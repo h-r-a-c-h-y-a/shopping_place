@@ -35,7 +35,7 @@ export class PhoneMarketComponent {
 
   toCart() {
    ph = this.phones.filter(phone => phone.bought);
-   this.route.navigate(['/shop', { outlets: { place: ['cart']}}]);
+   this.route.navigate(['/shop', { outlets: { place: ['cart']}}]).then();
   }
 
 }

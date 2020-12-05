@@ -44,8 +44,8 @@ export class CartComponent implements OnInit {
         this.products[i].purchase, this.products[i].quantity,
         this.products[i].price, (this.products[i].quantity * this.products[i].price)));
     }
-    this.sum = this.cart.sum(this.items);
-    this.route.navigate(['/shop', { outlets: { place: ['cart']}}]);
+    this.sum = this.cart.calculateTheSum(this.items);
+    this.route.navigate(['/shop', { outlets: { place: ['cart']}}]).then();
   }
 
   loadStripe() {

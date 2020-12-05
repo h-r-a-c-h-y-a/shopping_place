@@ -10,10 +10,11 @@ import {Product} from '../product-market/Item';
 export class CartService {
 
   items: Item[] = [];
+  sum: number;
 
   constructor(private http: HttpClient) { }
 
-  sum(items: Item[]): number {
+  calculateTheSum(items: Item[]): number {
     let sum = 0;
     for (let i = 0; i < items.length;) {
       sum += (items[i].price * items[i++].quantity);
